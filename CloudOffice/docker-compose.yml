@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:2.6
+    platform: linux/amd64
+    environment:
+        - MONGO_INITDB_ROOT_USERNAME=root
+        - MONGO_INITDB_ROOT_PASSWORD=TestPasswordReplaceIt
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongod.conf:/etc/mongod.conf
+      - ./mongodb_data:/data/db
+      - ./logs:/data/logs
+    command: ["mongod", "--config", "/etc/mongod.conf"]
