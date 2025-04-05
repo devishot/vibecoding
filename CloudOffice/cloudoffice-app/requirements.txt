@@ -1,0 +1,52 @@
+# FastAPI and ASGI server
+fastapi==0.109.2
+uvicorn[standard]==0.27.0
+starlette==0.36.3
+
+# Database
+sqlalchemy==2.0.25
+alembic==1.13.1
+psycopg2-binary==2.9.9  # PostgreSQL driver
+pymysql==1.1.0  # MySQL driver (optional)
+asyncpg==0.29.0  # Async PostgreSQL driver
+
+# Data validation and serialization
+pydantic==2.5.3
+pydantic-settings==2.1.0
+email-validator==2.1.0.post1
+
+# Authentication and security
+python-jose[cryptography]==3.3.0  # JWT tokens
+passlib[bcrypt]==1.7.4  # Password hashing
+python-multipart==0.0.6  # Form data parsing
+bcrypt==4.1.2
+
+# Utilities
+python-dotenv==1.0.0
+httpx==0.26.0  # HTTP client for making requests
+tenacity==8.2.3  # Retrying library
+pytz==2023.3.post1  # Timezone support
+
+# Testing
+pytest==7.4.4
+pytest-asyncio==0.23.4
+httpx==0.26.0
+
+# Logging and monitoring
+loguru==0.7.2
+
+# CORS
+fastapi-cors==0.0.6
+
+# Optional - for Excel/CSV handling
+openpyxl==3.1.2
+pandas==2.2.0
+
+# Optional - for file handling
+python-magic==0.4.27
+aiofiles==23.2.1
+
+# Optional - for task queue
+celery==5.3.6
+redis==5.0.1
+
