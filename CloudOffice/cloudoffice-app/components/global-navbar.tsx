@@ -17,7 +17,7 @@ export default function GlobalNavbar() {
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex items-center gap-2 md:gap-4">
-        <span className="text-xl font-bold">ProjectHub</span>
+        <span className="text-xl font-bold">CloudOffice</span>
       </div>
       <div className="flex items-center w-full max-w-sm mx-4">
         <div className="relative w-full">

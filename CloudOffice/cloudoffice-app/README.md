@@ -41,10 +41,17 @@ A modern, full-stack project management web application built with Next.js and F
 - npm or yarn
 - pip
 
-### Frontend Setup
+### To get started with the project:
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/project-management.git
-   cd project-management
+1. Install the frontend dependencies with `npm install`
+2. Run the frontend with `npm run dev`
+3. Set up the Python virtual environment for the backend
+4. Install the backend dependencies with `pip install -r requirements.txt`
+5. Run the backend with `uvicorn main:app --reload`
+6. Run the database using `docker compose up -d`, where `-d` flag runs the containers in detached mode
 
+
+### Setup backend manually
+> pip install 'sqlalchemy[asyncio]'
+> pip install asyncpg
+> pip install alembic

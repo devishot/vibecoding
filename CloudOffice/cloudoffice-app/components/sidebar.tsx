@@ -112,7 +112,7 @@ export default function Sidebar() {
           <div className="flex h-14 items-center border-b px-6">
             <Link href="/" className="flex items-center gap-2 font-bold">
               <Home className="h-5 w-5" />
-              <span>ProjectHub</span>
+              <span>CloudOffice</span>
             </Link>
           </div>
           <ScrollArea className="flex-1">
@@ -150,7 +150,7 @@ function MobileSidebar({ pathname, setOpen }: MobileSidebarProps) {
       <div className="flex h-14 items-center border-b px-6">
         <Link href="/" className="flex items-center gap-2 font-bold" onClick={() => setOpen(false)}>
           <Home className="h-5 w-5" />
-          <span>ProjectHub</span>
+          <span>CloudOffice</span>
         </Link>
       </div>
       <ScrollArea className="flex-1">

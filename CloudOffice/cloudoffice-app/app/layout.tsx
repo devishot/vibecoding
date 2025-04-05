@@ -10,7 +10,7 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Project Management",
+  title: "CloudOffice frontend",
   description: "Modern project management web application",
     generator: 'v0.dev'
 }
