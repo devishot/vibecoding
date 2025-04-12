@@ -1,9 +1,8 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:latest
     container_name: postgres_db
+    restart: no
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -11,12 +10,43 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+
+  backend:
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    depends_on:
+      - "db"
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+    restart: no
+    volumes:
+      - ./backend:/backend
+    environment:
+      PYTHONPATH: app
+      POSTGRES_HOST: db
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD_ESCAPED}@db:5432/${POSTGRES_DB}
+    ports:
+      - "8000:8000"
+    networks:
+      - app_network
+
+  frontend:
+    build:
+      context: frontend
+    command: npm run dev
+    restart: no
+    volumes:
+      - ./frontend:/frontend
+    ports:
+      - "3000:3000"
     networks:
       - app_network
 
 volumes:
-  postgres_data:
+  db_data:
 
 networks:
   app_network:
