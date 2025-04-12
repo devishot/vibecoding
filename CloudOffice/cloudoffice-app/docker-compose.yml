@@ -2,7 +2,6 @@ services:
   db:
     image: postgres:latest
     container_name: postgres_db
-    restart: no
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -20,14 +19,16 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - "db"
-    command: uvicorn main:app --host 0.0.0.0 --port 8000
-    restart: no
+    command: uvicorn main:app --reload --host 0.0.0.0 --port 8000
     volumes:
+      - .env:/backend/.env
       - ./backend:/backend
     environment:
       PYTHONPATH: app
       POSTGRES_HOST: db
+      # Application settings below
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD_ESCAPED}@db:5432/${POSTGRES_DB}
+      LOG_LEVEL: ${LOG_LEVEL}
     ports:
       - "8000:8000"
     networks:
@@ -37,8 +38,8 @@ services:
     build:
       context: frontend
     command: npm run dev
-    restart: no
     volumes:
+      - .env:/frontend/.env
       - ./frontend:/frontend
     ports:
       - "3000:3000"

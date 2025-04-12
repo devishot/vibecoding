@@ -11,8 +11,10 @@ COPY package-lock.json ./
 # Install dependencies
 RUN npm install
 
-# Copy the rest of the application code to the working directory
-COPY . .
+# Don't copy source files here for dev — use volume instead
+# # Copy the rest of the application code to the working directory
+# COPY . .
+
 
 # Build the Next.js application
 RUN npm run build

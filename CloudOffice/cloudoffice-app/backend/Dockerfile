@@ -10,4 +10,5 @@ RUN apt update && \
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+# Don't copy source files here for dev — use volume instead
+# COPY . .
