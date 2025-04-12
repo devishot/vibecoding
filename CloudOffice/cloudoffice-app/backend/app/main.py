@@ -1,23 +1,34 @@
-import asyncio
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
-from typing import List, Optional
-
-import schemas
-import crud
-from database import sessionmanager, create_all
-from dependencies import DBSessionDep
-import logging
-
-logger = logging.getLogger("uvicorn")
+from app.core.database import sessionmanager, create_all
+from app.core.logging import logger
+from app.api.routes.task import router as task_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await on_startup()
     yield
     await on_shutdown()
+
+async def on_startup():
+    logger.debug("On startup...")
+
+    logger.debug("Initializing database tables")
+
+    async with sessionmanager.connect() as connection:
+        # Ensure tables are created in dev (not needed with Alembic migrations in prod)
+        await create_all(connection)
+
+async def on_shutdown():
+    logger.debug("On shutdown...")
+
+    logger.debug("Closing database session manager")
+
+    if sessionmanager._engine is not None:
+        await sessionmanager.close()
+
 
 app = FastAPI(lifespan=lifespan, title="CloudOffice backend API", docs_url="/api/docs")
 
@@ -30,22 +41,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-async def on_startup():
-    logger.info("On startup...")
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
 
-    logger.info("Initializing database tables")
+app.include_router(task_router) 
 
-    async with sessionmanager.connect() as connection:
-        # Ensure tables are created in dev (not needed with Alembic migrations in prod)
-        await create_all(connection)
-
-async def on_shutdown():
-    logger.info("On shutdown...")
-
-    logger.info("Closing database session manager")
-
-    if sessionmanager._engine is not None:
-        await sessionmanager.close()
 
 # # Authentication
 # oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -182,38 +183,6 @@ async def on_shutdown():
 #             if db_project is None:
 #                 raise HTTPException(status_code=404, detail="Project not found")
 #             return db_project
-
-# Task endpoints
-@app.get("/tasks/", response_model=List[schemas.Task])
-async def read_tasks(
-    db: DBSessionDep,
-    skip: int = 0, 
-    limit: int = 100, 
-    project_id: Optional[int] = None,
-    status: Optional[str] = None,
-    # token: str = Depends(oauth2_scheme)
-):
-    tasks = await crud.get_tasks(db, skip=skip, limit=limit, project_id=project_id, status=status)
-    return tasks
-
-@app.post("/tasks/", response_model=schemas.Task)
-async def create_task(
-    task: schemas.TaskCreate,
-    db: DBSessionDep,
-    # token: str = Depends(oauth2_scheme)
-):
-    return await crud.create_task(db, task=task)
-
-@app.get("/tasks/{task_id}", response_model=schemas.Task)
-async def read_task(
-    task_id: int, 
-    db: DBSessionDep,
-    # token: str = Depends(oauth2_scheme)
-):
-    db_task = await crud.get_task(db, task_id=task_id)
-    if db_task is None:
-        raise HTTPException(status_code=404, detail="Task not found")
-    return db_task
 
 # # Time entry endpoints
 # @app.get("/time-entries/", response_model=List[schemas.TimeEntry])

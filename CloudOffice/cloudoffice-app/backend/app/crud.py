@@ -4,10 +4,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from datetime import datetime, timedelta
 from typing import List, Optional, Dict, Any
-import jwt
 from passlib.context import CryptContext
-import models
-import schemas
+
 
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -209,66 +207,6 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 #         db.commit()
 #         return True
 #     return False
-
-# Task CRUD operations
-async def get_task(db: AsyncSession, task_id: int):
-    result = await db.execute(
-        select(models.Task).where(models.Task.id == task_id)
-    )
-    return result.scalar_one_or_none()
-
-async def get_tasks(db: AsyncSession, skip: int = 0, limit: int = 100, project_id: Optional[int] = None, status: Optional[str] = None):
-    query = select(models.Task)
-    if project_id:
-        query = query.where(models.Task.project_id == project_id)
-    if status:
-        query = query.where(models.Task.status == status)
-    result = await db.execute(
-        query.offset(skip).limit(limit)
-    )
-    return result.scalars().all()
-
-async def create_task(db: AsyncSession, task: schemas.TaskCreate, current_user_id: int):
-    db_task = models.Task(
-        title=task.title,
-        description=task.description,
-        project_id=task.project_id,
-        assignee_id=task.assignee_id,
-        created_by_id=current_user_id,
-        estimated_hours=task.estimated_hours,
-        is_billable=task.is_billable,
-        status=task.status,
-        priority=task.priority,
-        deadline=task.deadline
-    )
-    db.add(db_task)
-    await db.commit()
-    await db.refresh(db_task)
-    return db_task
-
-async def update_task(db: AsyncSession, task_id: int, task: schemas.TaskCreate):
-    db_task = await get_task(db, task_id)
-    if db_task:
-        db_task.title = task.title
-        db_task.description = task.description
-        db_task.project_id = task.project_id
-        db_task.assignee_id = task.assignee_id
-        db_task.estimated_hours = task.estimated_hours
-        db_task.is_billable = task.is_billable
-        db_task.status = task.status
-        db_task.priority = task.priority
-        db_task.deadline = task.deadline
-        await db.commit()
-        await db.refresh(db_task)
-    return db_task
-
-async def delete_task(db: AsyncSession, task_id: int):
-    db_task = await get_task(db, task_id)
-    if db_task:
-        await db.delete(db_task)
-        await db.commit()
-        return True
-    return False
 
 # # Time entry CRUD operations
 # def get_time_entry(db: Session, time_entry_id: int):

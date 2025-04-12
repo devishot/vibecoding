@@ -37,11 +37,25 @@ A modern, full-stack project management web application built with Next.js and F
 
 ### Prerequisites
 - Node.js (v18 or later)
-- Python (v3.9 or later)
+- Python (v3.12 or later)
+- Next.js (v15.2 or later)
 - npm or yarn
 - pip
+- Postgresql (v17.4 or later)
+- Alembic (Postgresql migrations)
 
-### To get started with the project:
+### Contribution
+See useful commands in [Makefile](./Makefile)
+
+### Setup backend manually
+```bash
+> pip install 'sqlalchemy[asyncio]'
+> pip install asyncpg
+> pip install alembic
+> pip install mypy
+```
+
+### To get started manually:
 
 1. Install the frontend dependencies with `npm install`
 2. Run the frontend with `npm run dev`
@@ -50,12 +64,25 @@ A modern, full-stack project management web application built with Next.js and F
 5. Run the backend with `uvicorn main:app --reload`
 6. Run the database using `docker compose up -d`, where `-d` flag runs the containers in detached mode
 
-### Contribution
-1. `mypy backend/app` – lint checker
-
-
-### Setup backend manually
-> pip install 'sqlalchemy[asyncio]'
-> pip install asyncpg
-> pip install alembic
-> pip install mypy
+### Folder structure
+```
+app/
+├── main.py                # FastAPI app entrypoint
+├── core/                 # Core configs (e.g., settings, DB)
+│   ├── config.py         # Pydantic settings (env vars)
+│   └── database.py       # Async SQLAlchemy setup
+├── models/               # SQLAlchemy models
+│   └── user.py
+├── schemas/              # Pydantic schemas (DTOs)
+│   └── user.py
+├── crud/                 # DB operations (CRUD logic)
+│   └── user.py
+├── api/                  # API routers
+│   ├── deps.py           # Common dependencies
+│   └── routes/
+│       └── user.py       # User API endpoints
+├── services/             # Business logic layer
+│   └── user_service.py
+├── tests/                # Unit + integration tests
+│   └── test_user.py
+```
