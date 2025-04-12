@@ -21,7 +21,7 @@ import {
   ChevronRight,
   Menu,
 } from "lucide-react"
-import { cn } from "@/frontend/lib/utils"
+import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
