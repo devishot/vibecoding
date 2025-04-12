@@ -1,18 +1,25 @@
 import asyncio
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from sqlalchemy.ext.asyncio import AsyncSession
+from contextlib import asynccontextmanager
 
 from typing import List, Optional
-from datetime import datetime, timedelta
-import models
+
 import schemas
 import crud
-from database import async_session, init_db
+from database import sessionmanager, create_all
+from dependencies import DBSessionDep
+import logging
 
+logger = logging.getLogger("uvicorn")
 
-app = FastAPI(title="CloudOffice backend API")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await on_startup()
+    yield
+    await on_shutdown()
+
+app = FastAPI(lifespan=lifespan, title="CloudOffice backend API", docs_url="/api/docs")
 
 # Configure CORS
 app.add_middleware(
@@ -22,6 +29,23 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+async def on_startup():
+    logger.info("On startup...")
+
+    logger.info("Initializing database tables")
+
+    async with sessionmanager.connect() as connection:
+        # Ensure tables are created in dev (not needed with Alembic migrations in prod)
+        await create_all(connection)
+
+async def on_shutdown():
+    logger.info("On shutdown...")
+
+    logger.info("Closing database session manager")
+
+    if sessionmanager._engine is not None:
+        await sessionmanager.close()
 
 # # Authentication
 # oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -162,40 +186,34 @@ app.add_middleware(
 # Task endpoints
 @app.get("/tasks/", response_model=List[schemas.Task])
 async def read_tasks(
+    db: DBSessionDep,
     skip: int = 0, 
     limit: int = 100, 
     project_id: Optional[int] = None,
     status: Optional[str] = None,
-    db: AsyncSession = Depends(async_session),
     # token: str = Depends(oauth2_scheme)
 ):
-    async with db as session:
-        async with session.begin():
-            tasks = await crud.get_tasks(session, skip=skip, limit=limit, project_id=project_id, status=status)
-            return tasks
+    tasks = await crud.get_tasks(db, skip=skip, limit=limit, project_id=project_id, status=status)
+    return tasks
 
 @app.post("/tasks/", response_model=schemas.Task)
 async def create_task(
     task: schemas.TaskCreate,
-    db: AsyncSession = Depends(async_session),
+    db: DBSessionDep,
     # token: str = Depends(oauth2_scheme)
 ):
-    async with db as session:
-        async with session.begin():
-            return await crud.create_task(session, task=task)
+    return await crud.create_task(db, task=task)
 
 @app.get("/tasks/{task_id}", response_model=schemas.Task)
 async def read_task(
     task_id: int, 
-    db: AsyncSession = Depends(async_session),
+    db: DBSessionDep,
     # token: str = Depends(oauth2_scheme)
 ):
-    async with db as session:
-        async with session.begin():
-            db_task = await crud.get_task(session, task_id=task_id)
-            if db_task is None:
-                raise HTTPException(status_code=404, detail="Task not found")
-            return db_task
+    db_task = await crud.get_task(db, task_id=task_id)
+    if db_task is None:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return db_task
 
 # # Time entry endpoints
 # @app.get("/time-entries/", response_model=List[schemas.TimeEntry])
@@ -274,11 +292,5 @@ async def read_task(
             
 #             return await crud.get_company_dashboard(session)
 
-# Run the application with uvicorn
 
-if __name__ == "__main__":
-    asyncio.run(init_db())
-
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
 

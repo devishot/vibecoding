@@ -4,13 +4,13 @@ from sqlalchemy.sql import func
 import enum
 from database import Base
 
-# Association tables for many-to-many relationships
-project_user = Table(
-    "project_user",
-    Base.metadata,
-    Column("project_id", Integer, ForeignKey("projects.id"), primary_key=True),
-    Column("user_id", Integer, ForeignKey("users.id"), primary_key=True),
-)
+# # Association tables for many-to-many relationships
+# project_user = Table(
+#     "project_user",
+#     Base.metadata,
+#     Column("project_id", Integer, ForeignKey("projects.id"), primary_key=True),
+#     Column("user_id", Integer, ForeignKey("users.id"), primary_key=True),
+# )
 
 # # Enum for status values
 # class StatusEnum(enum.Enum):
@@ -119,9 +119,9 @@ class Task(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
     description = Column(Text)
-    project_id = Column(Integer, ForeignKey("projects.id"), index=True)
-    assignee_id = Column(Integer, ForeignKey("users.id"), index=True)
-    created_by_id = Column(Integer, ForeignKey("users.id"))
+    # project_id = Column(Integer, ForeignKey("projects.id"), index=True)
+    # assignee_id = Column(Integer, ForeignKey("users.id"), index=True)
+    # created_by_id = Column(Integer, ForeignKey("users.id"))
     estimated_hours = Column(Float, default=0.0)
     is_billable = Column(Boolean, default=True)
     status = Column(Enum(TaskStatusEnum), default=TaskStatusEnum.not_started)
@@ -132,11 +132,11 @@ class Task(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
-    # Relationships
-    project = relationship("Project", back_populates="tasks")
-    assignee = relationship("User", foreign_keys=[assignee_id], back_populates="assigned_tasks")
-    created_by = relationship("User", foreign_keys=[created_by_id], back_populates="created_tasks")
-    time_entries = relationship("TimeEntry", back_populates="task")
+    # # Relationships
+    # project = relationship("Project", back_populates="tasks")
+    # assignee = relationship("User", foreign_keys=[assignee_id], back_populates="assigned_tasks")
+    # created_by = relationship("User", foreign_keys=[created_by_id], back_populates="created_tasks")
+    # time_entries = relationship("TimeEntry", back_populates="task")
 
 # class TimeEntry(Base):
 #     __tablename__ = "time_entries"

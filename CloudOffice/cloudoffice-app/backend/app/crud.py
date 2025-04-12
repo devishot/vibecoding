@@ -1,6 +1,7 @@
-from sqlalchemy.orm import Session, joinedload
+
 from sqlalchemy import func, and_, or_
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 from datetime import datetime, timedelta
 from typing import List, Optional, Dict, Any
 import jwt
@@ -210,16 +211,22 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 #     return False
 
 # Task CRUD operations
-def get_task(db: Session, task_id: int):
-    return db.query(models.Task).filter(models.Task.id == task_id).first()
+async def get_task(db: AsyncSession, task_id: int):
+    result = await db.execute(
+        select(models.Task).where(models.Task.id == task_id)
+    )
+    return result.scalar_one_or_none()
 
-def get_tasks(db: Session, skip: int = 0, limit: int = 100, project_id: Optional[int] = None, status: Optional[str] = None):
-    query = db.query(models.Task)
+async def get_tasks(db: AsyncSession, skip: int = 0, limit: int = 100, project_id: Optional[int] = None, status: Optional[str] = None):
+    query = select(models.Task)
     if project_id:
-        query = query.filter(models.Task.project_id == project_id)
+        query = query.where(models.Task.project_id == project_id)
     if status:
-        query = query.filter(models.Task.status == status)
-    return query.offset(skip).limit(limit).all()
+        query = query.where(models.Task.status == status)
+    result = await db.execute(
+        query.offset(skip).limit(limit)
+    )
+    return result.scalars().all()
 
 async def create_task(db: AsyncSession, task: schemas.TaskCreate, current_user_id: int):
     db_task = models.Task(
@@ -239,8 +246,8 @@ async def create_task(db: AsyncSession, task: schemas.TaskCreate, current_user_i
     await db.refresh(db_task)
     return db_task
 
-def update_task(db: Session, task_id: int, task: schemas.TaskCreate):
-    db_task = get_task(db, task_id)
+async def update_task(db: AsyncSession, task_id: int, task: schemas.TaskCreate):
+    db_task = await get_task(db, task_id)
     if db_task:
         db_task.title = task.title
         db_task.description = task.description
@@ -251,15 +258,15 @@ def update_task(db: Session, task_id: int, task: schemas.TaskCreate):
         db_task.status = task.status
         db_task.priority = task.priority
         db_task.deadline = task.deadline
-        db.commit()
-        db.refresh(db_task)
+        await db.commit()
+        await db.refresh(db_task)
     return db_task
 
-def delete_task(db: Session, task_id: int):
-    db_task = get_task(db, task_id)
+async def delete_task(db: AsyncSession, task_id: int):
+    db_task = await get_task(db, task_id)
     if db_task:
-        db.delete(db_task)
-        db.commit()
+        await db.delete(db_task)
+        await db.commit()
         return True
     return False
 

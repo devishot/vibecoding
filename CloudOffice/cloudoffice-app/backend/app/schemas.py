@@ -42,7 +42,7 @@ class OAuthAccount(OAuthAccountBase):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class UserBase(BaseModel):
     email: EmailStr
@@ -62,7 +62,7 @@ class User(UserBase):
     oauth_accounts: List[OAuthAccount] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # # Client schemas
 # class ClientBase(BaseModel):
@@ -156,7 +156,7 @@ class Task(TaskBase):
     created_by: Optional[User] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # # Time entry schemas
 # class TimeEntryBase(BaseModel):
