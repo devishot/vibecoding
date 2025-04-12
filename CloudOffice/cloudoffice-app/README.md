@@ -50,8 +50,12 @@ A modern, full-stack project management web application built with Next.js and F
 5. Run the backend with `uvicorn main:app --reload`
 6. Run the database using `docker compose up -d`, where `-d` flag runs the containers in detached mode
 
+### Contribution
+1. `mypy backend/app` – lint checker
+
 
 ### Setup backend manually
 > pip install 'sqlalchemy[asyncio]'
 > pip install asyncpg
 > pip install alembic
+> pip install mypy
