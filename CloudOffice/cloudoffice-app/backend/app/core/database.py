@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.orm import declarative_base
 
-from config import DATABASE_URL
+from .settings import settings
 
 # Create Base class
 Base = declarative_base()
@@ -54,7 +54,7 @@ class DatabaseSessionManager:
         finally:
             await session.close()
 
-sessionmanager = DatabaseSessionManager(DATABASE_URL)
+sessionmanager = DatabaseSessionManager(settings.database_url)
 
 # Create dependency for getting a database session from the request
 async def get_db_session():
