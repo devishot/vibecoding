@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import Link from "next/link"
 import { ArrowUpDown, MoreHorizontal, Plus, PencilIcon, ArchiveIcon, UserIcon } from "lucide-react"

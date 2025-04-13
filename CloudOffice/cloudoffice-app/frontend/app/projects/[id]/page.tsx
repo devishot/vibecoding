@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import Link from "next/link"
 import { ArrowLeft, Clock, FileText, Pencil, Receipt, Save } from "lucide-react"
