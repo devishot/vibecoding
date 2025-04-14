@@ -19,6 +19,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import { DRAFT_TASK_ID } from "@/lib/constants"
 
 interface TaskEditDialogProps {
   task: any | null
@@ -132,8 +133,12 @@ export function TaskEditDialog({ task, open, onOpenChange, onSave }: TaskEditDia
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl">{editedTask.title}</DialogTitle>
-          <DialogDescription>Task ID: {editedTask.id}</DialogDescription>
+          <DialogTitle className="text-xl">
+            {editedTask.id === DRAFT_TASK_ID && !editedTask.title ? "New task" : editedTask.title}
+          </DialogTitle>
+          {editedTask.id !== DRAFT_TASK_ID && (
+            <DialogDescription>Task ID: {editedTask.id}</DialogDescription>
+          )}
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
@@ -154,7 +159,7 @@ export function TaskEditDialog({ task, open, onOpenChange, onSave }: TaskEditDia
               </Select>
             </div>
 
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <Label htmlFor="assignee">Assignee</Label>
               <Select
                 value={editedTask.assignee.id}
@@ -187,7 +192,7 @@ export function TaskEditDialog({ task, open, onOpenChange, onSave }: TaskEditDia
                   ))}
                 </SelectContent>
               </Select>
-            </div>
+            </div> */}
           </div>
 
           <div className="space-y-2">

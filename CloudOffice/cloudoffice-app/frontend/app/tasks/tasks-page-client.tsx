@@ -10,6 +10,7 @@ import { TaskTable } from "@/components/tasks/task-table";
 import { TaskEditDialog } from "@/components/tasks/task-edit-dialog";
 import Header from "@/components/tasks/header";
 import FilterSection from "@/components/tasks/filter-section";
+import { DRAFT_TASK_ID } from "../../lib/constants";
 
 export default function TasksPageClient({ tasks }: { tasks: any[] }) {
   const [selectedTask, setSelectedTask] = useState<any | null>(null);
@@ -26,12 +27,24 @@ export default function TasksPageClient({ tasks }: { tasks: any[] }) {
     setIsEditDialogOpen(true);
   };
 
-  // const handleSaveTask = (updatedTask: any) => {
-  //   console.log("Saving task:", updatedTask);
-  //   setIsEditDialogOpen(false);
-  //   setSelectedTask(null);
-  //   // In a real app, you would update the task in your state or database here
-  // };
+  const handleSaveTask = (updatedTask: any) => {
+    console.log("Saving task:", updatedTask);
+    setIsEditDialogOpen(false);
+    setSelectedTask(null);
+    // In a real app, you would update the task in your state or database here
+  };
+
+  const handleAddTask = () => {
+    const existingDraft = filteredTasks.find(task => task.id === DRAFT_TASK_ID);
+    const newDraft = existingDraft || {
+      id: DRAFT_TASK_ID,
+    };
+    if (!existingDraft) {
+      filteredTasks.push(newDraft);
+    }
+    setSelectedTask(newDraft);
+    setIsEditDialogOpen(true);
+  };
 
   return (
     <div className="flex flex-col">
@@ -63,22 +76,30 @@ export default function TasksPageClient({ tasks }: { tasks: any[] }) {
 
               <TabsContent value="my-tasks" className="space-y-4">
                 <TaskTable tasks={filteredTasks} onEditTask={handleEditTask} />
+                <Button variant="outline" size="sm" onClick={() => handleAddTask()} className="mt-2">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Task
+                </Button>
               </TabsContent>
 
               <TabsContent value="all-tasks" className="space-y-4">
                 <TaskTable tasks={filteredTasks} onEditTask={handleEditTask} />
+                <Button variant="outline" size="sm" onClick={() => handleAddTask()} className="mt-2">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Task
+                </Button>
               </TabsContent>
             </Tabs>
           </div>
         </div>
       </div>
 
-      {/* <TaskEditDialog
+      <TaskEditDialog
         task={selectedTask}
         open={isEditDialogOpen}
         onOpenChange={setIsEditDialogOpen}
         onSave={handleSaveTask}
-      /> */}
+      />
     </div>
   );
 }

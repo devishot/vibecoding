@@ -1,0 +1,1 @@
+export const DRAFT_TASK_ID = 0; 

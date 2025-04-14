@@ -16,7 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
-
+import { DRAFT_TASK_ID } from "@/lib/constants"
 interface TaskTableProps {
   tasks: any[]
   onEditTask: (task: any) => void
@@ -28,6 +28,8 @@ export function TaskTable({ tasks, onEditTask }: TaskTableProps) {
 
   // Sort tasks
   const sortedTasks = [...tasks].sort((a, b) => {
+    if (a.id === DRAFT_TASK_ID) return 1;
+    if (b.id === DRAFT_TASK_ID) return -1;
     const fieldA = a[sortField]
     const fieldB = b[sortField]
 
