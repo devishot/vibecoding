@@ -229,7 +229,7 @@ export function TaskEditDialog({ task, open, onOpenChange, onSave }: TaskEditDia
             </div>
           </div>
 
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <Label htmlFor="tags">Tags</Label>
             <div className="flex flex-wrap gap-2 mb-2">
               {selectedTags.map((tag) => (
@@ -266,7 +266,7 @@ export function TaskEditDialog({ task, open, onOpenChange, onSave }: TaskEditDia
                 ))}
               </div>
             </div>
-          </div>
+          </div> */}
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">

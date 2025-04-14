@@ -154,13 +154,13 @@ export function TaskTable({ tasks, onEditTask }: TaskTableProps) {
               <TableCell>
                 <div>
                   <div className="font-medium">{task.title}</div>
-                  <div className="hidden md:flex lg:hidden mt-1 space-x-1">
+                  {/* <div className="hidden md:flex lg:hidden mt-1 space-x-1">
                     {task.tags.map((tag: string) => (
                       <Badge key={tag} variant="outline" className="text-xs">
                         {tag}
                       </Badge>
                     ))}
-                  </div>
+                  </div> */}
                 </div>
               </TableCell>
               <TableCell className="hidden md:table-cell">
@@ -209,7 +209,7 @@ export function TaskTable({ tasks, onEditTask }: TaskTableProps) {
                 </Select>
               </TableCell>
               <TableCell className="hidden lg:table-cell">
-                <Select defaultValue={task.assignee.id}>
+                {/* <Select defaultValue={task.assignee.id}>
                   <SelectTrigger className="h-8 w-[150px]">
                     <SelectValue placeholder="Assignee" />
                   </SelectTrigger>
@@ -226,7 +226,7 @@ export function TaskTable({ tasks, onEditTask }: TaskTableProps) {
                       </SelectItem>
                     ))}
                   </SelectContent>
-                </Select>
+                </Select> */}
               </TableCell>
               <TableCell className="hidden lg:table-cell">
                 <Input type="date" defaultValue={task.deadline} className="h-8 w-[140px]" />
