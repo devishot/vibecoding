@@ -15,7 +15,7 @@ services:
 
   backend:
     build:
-      context: backend
+      context: ./backend
       dockerfile: Dockerfile
     depends_on:
       - "db"
@@ -36,11 +36,17 @@ services:
 
   frontend:
     build:
-      context: frontend
+      context: ./frontend
+    depends_on:
+      - backend
+    restart: always
     command: npm run dev
     volumes:
       - .env:/frontend/.env
       - ./frontend:/frontend
+    environment:
+      - BACKEND_URL=http://backend:8000
+      - NODE_ENV=development # This is to avoid building the app in production mode
     ports:
       - "3000:3000"
     networks:

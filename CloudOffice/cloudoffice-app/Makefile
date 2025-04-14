@@ -19,6 +19,9 @@ python_lint:
 run:
 	docker compose up
 
+run_rebuild:
+	docker compose up --build
+
 stop:
 	docker compose down
 
@@ -30,7 +33,11 @@ remove_all_containers:
 	@echo "Removing all containers..."
 	@docker ps -aq | xargs -r docker rm
 
-clean: stop_all_containers remove_all_containers
+clean_volumes:
+	@echo "Removing all volumes..."
+	@docker system prune -af --volumes
+
+clean: stop_all_containers remove_all_containers clean_volumes
 
 # Connect to docker containers
 

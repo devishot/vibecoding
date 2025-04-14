@@ -27,6 +27,16 @@ const nextConfig = {
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
   },
+  output: "standalone",
+  // outputFileTracingRoot: path.join(__dirname, "../../"),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  webpackDevMiddleware: (config) => {
+    config.watchOptions = {
+      poll: 1000,
+      aggregateTimeout: 300,
+    };
+    return config;
+  },
 }
 
 if (userConfig) {
