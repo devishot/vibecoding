@@ -17,13 +17,10 @@ python_lint:
 # Manage docker containers
 
 run:
-	docker compose -f "docker-compose.dev.yml" up
-
-run_docker_rebuild:
-	docker compose -f "docker-compose.dev.yml" up --build
+	docker compose up
 
 stop:
-	docker compose -f "docker-compose.dev.yml" down
+	docker compose down
 
 stop_all_containers:
 	@echo "Stopping all running containers..."
@@ -33,31 +30,27 @@ remove_all_containers:
 	@echo "Removing all containers..."
 	@docker ps -aq | xargs -r docker rm
 
-clean_volumes:
-	@echo "Removing all volumes..."
-	@docker system prune -af --volumes
-
-clean: stop_all_containers remove_all_containers clean_volumes
+clean: stop_all_containers remove_all_containers
 
 # Connect to docker containers
 
 bash_backend:
-	docker compose -f "docker-compose.dev.yml" exec backend bash
+	docker compose exec backend bash
 
 bash_frontend:
-	docker compose -f "docker-compose.dev.yml" exec frontend bash
+	docker compose exec frontend bash
 
 # Database migrations via docker container
 
 alembic_create_revision:
 	@read -p "Enter revision message: " msg; \
-	docker compose -f "docker-compose.dev.yml" exec backend alembic revision --autogenerate -m "$$msg"
+	docker compose exec backend alembic revision --autogenerate -m "$$msg"
 
 alembic_upgrade:
-	docker compose -f "docker-compose.dev.yml" exec backend alembic upgrade head
+	docker compose exec backend alembic upgrade head
 
 alembic_downgrade:
-	docker compose -f "docker-compose.dev.yml" exec backend alembic downgrade -1
+	docker compose exec backend alembic downgrade -1
 
 alembic_cleanup:
-	docker compose -f "docker-compose.dev.yml" exec backend alembic downgrade base
+	docker compose exec backend alembic downgrade base
