@@ -19,108 +19,115 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { DRAFT_TASK_ID } from "@/lib/constants"
+import { DRAFT_TASK_ID, TASK_PRIORITY_OPTIONS, TASK_STATUS_OPTIONS } from "@/lib/constants"
+import { createTask, updateTask } from "@/lib/data-access/tasks"
 
 interface TaskEditDialogProps {
   task: any | null
   open: boolean
   onOpenChange: (open: boolean) => void
-  onSave: (task: any) => void
+  onSaved: (task: any) => void
 }
 
-export function TaskEditDialog({ task, open, onOpenChange, onSave }: TaskEditDialogProps) {
+
+export function TaskForm({ task, open, onOpenChange, onSaved }: TaskEditDialogProps) {
   const [editedTask, setEditedTask] = useState<any | null>(null)
-  const [newTag, setNewTag] = useState("")
-  const [selectedTags, setSelectedTags] = useState<string[]>([])
+  // const [newTag, setNewTag] = useState("")
+  // const [selectedTags, setSelectedTags] = useState<string[]>([])
 
   useEffect(() => {
     if (task) {
       setEditedTask({ ...task })
-      setSelectedTags(task.tags || [])
+      // setSelectedTags(task.tags || [])
     }
   }, [task])
 
   if (!editedTask) return null
 
-  // Status options
-  const statusOptions = [
-    { value: "to-do", label: "To-do" },
-    { value: "in-progress", label: "In progress" },
-    { value: "completed", label: "Completed" },
-  ]
-
-  // Priority options
-  const priorityOptions = [
-    { value: "low", label: "Low" },
-    { value: "medium", label: "Medium" },
-    { value: "high", label: "High" },
-  ]
 
   // Projects (sample data)
   const projects = [
-    { value: "marketing-website", label: "Marketing Website Redesign" },
-    { value: "mobile-app", label: "Mobile App Development" },
-    { value: "ecommerce", label: "E-commerce Platform Integration" },
-    { value: "project-management", label: "Project Management App" },
+    { value: "1", label: "Marketing Website Redesign" },
+    { value: "2", label: "Mobile App Development" },
+    { value: "3", label: "E-commerce Platform Integration" },
+    { value: "4", label: "Project Management App" },
   ]
 
-  // Users (sample data)
-  const users = [
-    { id: "USR-001", name: "David Robinson", initials: "DR" },
-    { id: "USR-002", name: "Lisa Smith", initials: "LS" },
-    { id: "USR-003", name: "Daniel Brown", initials: "DB" },
-    { id: "USR-004", name: "William Johnson", initials: "WJ" },
-    { id: "USR-005", name: "Michael Miller", initials: "MM" },
-    { id: "USR-006", name: "David Lee", initials: "DL" },
-  ]
+  // // Users (sample data)
+  // const users = [
+  //   { id: "USR-001", name: "David Robinson", initials: "DR" },
+  //   { id: "USR-002", name: "Lisa Smith", initials: "LS" },
+  //   { id: "USR-003", name: "Daniel Brown", initials: "DB" },
+  //   { id: "USR-004", name: "William Johnson", initials: "WJ" },
+  //   { id: "USR-005", name: "Michael Miller", initials: "MM" },
+  //   { id: "USR-006", name: "David Lee", initials: "DL" },
+  // ]
 
-  // Common tags
-  const commonTags = [
-    "UX research",
-    "prototyping",
-    "test",
-    "design",
-    "frontend",
-    "backend",
-    "bug fix",
-    "code review",
-    "QA",
-  ]
+  // // Common tags
+  // const commonTags = [
+  //   "UX research",
+  //   "prototyping",
+  //   "test",
+  //   "design",
+  //   "frontend",
+  //   "backend",
+  //   "bug fix",
+  //   "code review",
+  //   "QA",
+  // ]
 
   // Handle input changes
   const handleChange = (field: string, value: any) => {
     setEditedTask({ ...editedTask, [field]: value })
   }
 
-  // Handle tag selection
-  const handleTagSelect = (tag: string) => {
-    if (selectedTags.includes(tag)) {
-      setSelectedTags(selectedTags.filter((t) => t !== tag))
-    } else {
-      setSelectedTags([...selectedTags, tag])
-    }
-  }
+  // // Handle tag selection
+  // const handleTagSelect = (tag: string) => {
+  //   if (selectedTags.includes(tag)) {
+  //     setSelectedTags(selectedTags.filter((t) => t !== tag))
+  //   } else {
+  //     setSelectedTags([...selectedTags, tag])
+  //   }
+  // }
 
-  // Add new tag
-  const handleAddTag = () => {
-    if (newTag && !selectedTags.includes(newTag)) {
-      setSelectedTags([...selectedTags, newTag])
-      setNewTag("")
-    }
-  }
+  // // Add new tag
+  // const handleAddTag = () => {
+  //   if (newTag && !selectedTags.includes(newTag)) {
+  //     setSelectedTags([...selectedTags, newTag])
+  //     setNewTag("")
+  //   }
+  // }
 
-  // Remove tag
-  const handleRemoveTag = (tag: string) => {
-    setSelectedTags(selectedTags.filter((t) => t !== tag))
-  }
+  // // Remove tag
+  // const handleRemoveTag = (tag: string) => {
+  //   setSelectedTags(selectedTags.filter((t) => t !== tag))
+  // }
 
   // Handle save
-  const handleSave = () => {
+  const handleSave = async () => {
+    // Remove created_at and updated_at before updating the task
+    const { created_at, updated_at, ...rest } = editedTask
+    // Remove id before creating a new task
     const updatedTask = {
-      ...editedTask,
-      tags: selectedTags,
+      ...rest,
+      ...(editedTask.id === DRAFT_TASK_ID ? { id: undefined } : {}),
+      // tags: selectedTags,
     }
-    onSave(updatedTask)
+
+    console.log("Saving task with data:", updatedTask);
+
+    try {
+      if (editedTask.id === DRAFT_TASK_ID) {
+        // Create a new task
+        await createTask(updatedTask)
+      } else {
+        // Update an existing task
+        await updateTask(updatedTask.id, updatedTask)
+      }
+      onSaved(updatedTask)
+    } catch (error) {
+      console.error("Error saving task:", error)
+    }
   }
 
   // Format date for display
@@ -150,7 +157,7 @@ export function TaskEditDialog({ task, open, onOpenChange, onSave }: TaskEditDia
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>
-                  {statusOptions.map((status) => (
+                  {TASK_STATUS_OPTIONS.map((status) => (
                     <SelectItem key={status.value} value={status.value}>
                       {status.label}
                     </SelectItem>
@@ -201,7 +208,7 @@ export function TaskEditDialog({ task, open, onOpenChange, onSave }: TaskEditDia
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <Label htmlFor="project">Project</Label>
               <Select value={editedTask.project} onValueChange={(value) => handleChange("project", value)}>
                 <SelectTrigger id="project">
@@ -215,7 +222,7 @@ export function TaskEditDialog({ task, open, onOpenChange, onSave }: TaskEditDia
                   ))}
                 </SelectContent>
               </Select>
-            </div>
+            </div> */}
 
             <div className="space-y-2">
               <Label htmlFor="priority">Priority</Label>
@@ -224,7 +231,7 @@ export function TaskEditDialog({ task, open, onOpenChange, onSave }: TaskEditDia
                   <SelectValue placeholder="Select priority" />
                 </SelectTrigger>
                 <SelectContent>
-                  {priorityOptions.map((priority) => (
+                  {TASK_PRIORITY_OPTIONS.map((priority) => (
                     <SelectItem key={priority.value} value={priority.value}>
                       {priority.label}
                     </SelectItem>
@@ -279,7 +286,7 @@ export function TaskEditDialog({ task, open, onOpenChange, onSave }: TaskEditDia
               <Input
                 id="deadline"
                 type="date"
-                value={editedTask.deadline}
+                value={editedTask.deadline || ""}
                 onChange={(e) => handleChange("deadline", e.target.value)}
               />
             </div>
@@ -336,14 +343,16 @@ export function TaskEditDialog({ task, open, onOpenChange, onSave }: TaskEditDia
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground">
-            <div>
-              <span className="font-medium">Created:</span> {formatDate(editedTask.createdAt)}
+          {editedTask.id !== DRAFT_TASK_ID && (
+            <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground">
+              <div>
+                <span className="font-medium">Created:</span> {formatDate(editedTask.createdAt)}
+              </div>
+              <div>
+                <span className="font-medium">Updated:</span> {formatDate(editedTask.updatedAt)}
+              </div>
             </div>
-            <div>
-              <span className="font-medium">Updated:</span> {formatDate(editedTask.updatedAt)}
-            </div>
-          </div>
+          )}
         </div>
 
         <DialogFooter>

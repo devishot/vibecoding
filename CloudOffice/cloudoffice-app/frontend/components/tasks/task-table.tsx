@@ -16,7 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
-import { DRAFT_TASK_ID } from "@/lib/constants"
+import { DRAFT_TASK_ID, TASK_STATUS_OPTIONS, TASK_PRIORITY_OPTIONS } from "@/lib/constants"
 interface TaskTableProps {
   tasks: any[]
   onEditTask: (task: any) => void
@@ -47,20 +47,6 @@ export function TaskTable({ tasks, onEditTask }: TaskTableProps) {
       setSortDirection("asc")
     }
   }
-
-  // Status options
-  const statusOptions = [
-    { value: "to-do", label: "To-do" },
-    { value: "in-progress", label: "In progress" },
-    { value: "completed", label: "Completed" },
-  ]
-
-  // Priority options
-  const priorityOptions = [
-    { value: "low", label: "Low" },
-    { value: "medium", label: "Medium" },
-    { value: "high", label: "High" },
-  ]
 
   // Projects (sample data)
   const projects = [
@@ -139,7 +125,7 @@ export function TaskTable({ tasks, onEditTask }: TaskTableProps) {
                 <ArrowUpDown className="ml-2 h-4 w-4" />
               </div>
             </TableHead>
-            <TableHead className="hidden md:table-cell">Project</TableHead>
+            {/* <TableHead className="hidden md:table-cell">Project</TableHead> */}
             <TableHead className="w-[120px]">Status</TableHead>
             <TableHead className="w-[100px]">Priority</TableHead>
             <TableHead className="hidden lg:table-cell">Assignee</TableHead>
@@ -165,7 +151,7 @@ export function TaskTable({ tasks, onEditTask }: TaskTableProps) {
                   </div> */}
                 </div>
               </TableCell>
-              <TableCell className="hidden md:table-cell">
+              {/* <TableCell className="hidden md:table-cell">
                 <Select defaultValue={task.project}>
                   <SelectTrigger className="h-8 w-[180px]">
                     <SelectValue placeholder="Select project" />
@@ -178,14 +164,14 @@ export function TaskTable({ tasks, onEditTask }: TaskTableProps) {
                     ))}
                   </SelectContent>
                 </Select>
-              </TableCell>
+              </TableCell> */}
               <TableCell>
                 <Select defaultValue={task.status}>
                   <SelectTrigger className="h-8 w-[130px]">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
-                    {statusOptions.map((status) => (
+                    {TASK_STATUS_OPTIONS.map((status) => (
                       <SelectItem key={status.value} value={status.value}>
                         <div className="flex items-center">
                           <span className="mr-2">{getStatusIcon(status.value)}</span>
@@ -202,7 +188,7 @@ export function TaskTable({ tasks, onEditTask }: TaskTableProps) {
                     <SelectValue placeholder="Priority" />
                   </SelectTrigger>
                   <SelectContent>
-                    {priorityOptions.map((priority) => (
+                    {TASK_PRIORITY_OPTIONS.map((priority) => (
                       <SelectItem key={priority.value} value={priority.value}>
                         {priority.label}
                       </SelectItem>

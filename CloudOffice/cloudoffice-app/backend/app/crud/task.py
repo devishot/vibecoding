@@ -54,8 +54,8 @@ class TaskCrud:
         if db_task:
             db_task.title = task.title
             db_task.description = task.description
-            db_task.project_id = task.project_id
-            db_task.assignee_id = task.assignee_id
+            # db_task.project_id = task.project_id
+            # db_task.assignee_id = task.assignee_id
             db_task.estimated_hours = task.estimated_hours
             db_task.is_billable = task.is_billable
             db_task.status = task.status

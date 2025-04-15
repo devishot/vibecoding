@@ -1,12 +1,8 @@
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any, Union
-from datetime import datetime
+from datetime import datetime, date
 from enum import Enum
-
-class TaskStatusEnum(str, Enum):
-    not_started = "not_started"
-    in_progress = "in_progress"
-    completed = "completed"
+from app.core.constants import TaskStatusEnum, TaskPriorityEnum
 
 # Task schemas
 class TaskBaseDto(BaseModel):
@@ -16,9 +12,9 @@ class TaskBaseDto(BaseModel):
     # assignee_id: Optional[int] = None
     estimated_hours: float = 0.0
     is_billable: bool = False
-    status: TaskStatusEnum = TaskStatusEnum.not_started
-    priority: Optional[str] = None
-    deadline: Optional[datetime] = None
+    status: TaskStatusEnum = TaskStatusEnum.to_do
+    priority: TaskPriorityEnum = TaskPriorityEnum.not_defined
+    deadline: Optional[date] = None
     start_time: Optional[datetime] = None
     end_time: Optional[datetime] = None
 

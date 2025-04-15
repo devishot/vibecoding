@@ -58,3 +58,18 @@ async def delete_task(
     found_result = await task_crud.delete_task(task_id=task_id)
     if not found_result:
         raise HTTPException(status_code=404, detail="Task not found")
+
+@router.put("/{task_id}", response_model=TaskDto)
+async def update_task(
+    task_id: int,
+    task: TaskCreateDto,
+    db: DBSessionDep, # type: ignore
+    # token: str = Depends(oauth2_scheme)
+):
+    task_crud = TaskCrud(db)
+    db_task = await task_crud.get_task(task_id=task_id)
+    if db_task is None:
+        raise HTTPException(status_code=404, detail="Task not found")
+    updated_task = await task_crud.update_task(task_id=task_id, task=task)
+    return updated_task
+

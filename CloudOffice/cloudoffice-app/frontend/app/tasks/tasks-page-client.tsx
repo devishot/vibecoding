@@ -7,14 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { TaskTable } from "@/components/tasks/task-table";
-import { TaskEditDialog } from "@/components/tasks/task-edit-dialog";
+import { TaskForm } from "@/app/tasks/task-form";
 import Header from "@/components/tasks/header";
 import FilterSection from "@/components/tasks/filter-section";
-import { DRAFT_TASK_ID } from "../../lib/constants";
+import { DRAFT_TASK_ID, DRAFT_TASK_TEMPLATE } from "../../lib/constants";
 
 export default function TasksPageClient({ tasks }: { tasks: any[] }) {
   const [selectedTask, setSelectedTask] = useState<any | null>(null);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isEditFormOpen, setIsEditFormOpen] = useState(false);
   // const [showFilters, setShowFilters] = useState(false);
   const showFilters = false;
   const [activeTab, setActiveTab] = useState("my-tasks");
@@ -24,26 +24,23 @@ export default function TasksPageClient({ tasks }: { tasks: any[] }) {
   
   const handleEditTask = (task: any) => {
     setSelectedTask(task);
-    setIsEditDialogOpen(true);
+    setIsEditFormOpen(true);
   };
 
-  const handleSaveTask = (updatedTask: any) => {
+  const handleTaskSaved = (updatedTask: any) => {
     console.log("Saving task:", updatedTask);
-    setIsEditDialogOpen(false);
+    setIsEditFormOpen(false);
     setSelectedTask(null);
-    // In a real app, you would update the task in your state or database here
   };
 
   const handleAddTask = () => {
     const existingDraft = filteredTasks.find(task => task.id === DRAFT_TASK_ID);
-    const newDraft = existingDraft || {
-      id: DRAFT_TASK_ID,
-    };
+    const newDraft = existingDraft || DRAFT_TASK_TEMPLATE;
     if (!existingDraft) {
       filteredTasks.push(newDraft);
     }
     setSelectedTask(newDraft);
-    setIsEditDialogOpen(true);
+    setIsEditFormOpen(true);
   };
 
   return (
@@ -94,11 +91,11 @@ export default function TasksPageClient({ tasks }: { tasks: any[] }) {
         </div>
       </div>
 
-      <TaskEditDialog
+      <TaskForm
         task={selectedTask}
-        open={isEditDialogOpen}
-        onOpenChange={setIsEditDialogOpen}
-        onSave={handleSaveTask}
+        open={isEditFormOpen}
+        onOpenChange={setIsEditFormOpen}
+        onSaved={handleTaskSaved}
       />
     </div>
   );

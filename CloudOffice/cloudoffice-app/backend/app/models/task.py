@@ -1,14 +1,8 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Float, DateTime, Text, Enum, Table
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Float, DateTime, Date,Text, Enum, Table
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-import enum
+from app.core.constants import TaskStatusEnum, TaskPriorityEnum
 from app.core.database import Base
-
-class TaskStatusEnum(enum.Enum):
-    not_started = "not_started"
-    in_progress = "in_progress"
-    completed = "completed"
-
 
 class Task(Base):
     __tablename__ = "tasks"
@@ -21,9 +15,9 @@ class Task(Base):
     # created_by_id = Column(Integer, ForeignKey("users.id"))
     estimated_hours = Column(Float, default=0.0)
     is_billable = Column(Boolean, default=True)
-    status = Column(Enum(TaskStatusEnum), default=TaskStatusEnum.not_started)
-    priority = Column(String)
-    deadline = Column(DateTime(timezone=True), nullable=True)
+    status = Column(Enum(TaskStatusEnum), default=TaskStatusEnum.draft)
+    priority = Column(Enum(TaskPriorityEnum), default=TaskPriorityEnum.not_defined)
+    deadline = Column(Date, nullable=True)
     start_time = Column(DateTime(timezone=True), nullable=True)
     end_time = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
