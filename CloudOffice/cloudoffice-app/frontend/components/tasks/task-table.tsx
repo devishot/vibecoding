@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { DRAFT_TASK_ID, TASK_STATUS_OPTIONS, TASK_PRIORITY_OPTIONS } from "@/lib/constants"
+import { deleteTask } from "@/lib/data-access/tasks"
 interface TaskTableProps {
   tasks: any[]
   onEditTask: (task: any) => void
@@ -230,9 +231,6 @@ export function TaskTable({ tasks, onEditTask }: TaskTableProps) {
                   <Button variant="ghost" size="icon" title="Log time">
                     <Clock className="h-4 w-4" />
                   </Button>
-                  <Button variant="ghost" size="icon" onClick={() => onEditTask(task)} title="Edit task">
-                    <PencilIcon className="h-4 w-4" />
-                  </Button>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon">
@@ -250,7 +248,7 @@ export function TaskTable({ tasks, onEditTask }: TaskTableProps) {
                         Log Time
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem className="text-destructive">
+                      <DropdownMenuItem className="text-destructive" onClick={() => deleteTask(task.id)}>
                         <Trash2 className="mr-2 h-4 w-4" />
                         Delete
                       </DropdownMenuItem>
