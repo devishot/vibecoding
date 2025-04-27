@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException
 
 from app.core.logging import logger
 from app.core.dependencies import DBSessionDep
-from app.schemas.task import TaskDto, TaskCreateDto
+from app.schemas.task import TaskDto, TaskCreateDto, TaskUpdateDto
 from app.crud.task import TaskCrud
 
 router = APIRouter(
@@ -62,7 +62,7 @@ async def delete_task(
 @router.put("/{task_id}", response_model=TaskDto)
 async def update_task(
     task_id: int,
-    task: TaskCreateDto,
+    task_updates: TaskUpdateDto,
     db: DBSessionDep, # type: ignore
     # token: str = Depends(oauth2_scheme)
 ):
@@ -70,6 +70,6 @@ async def update_task(
     db_task = await task_crud.get_task(task_id=task_id)
     if db_task is None:
         raise HTTPException(status_code=404, detail="Task not found")
-    updated_task = await task_crud.update_task(task_id=task_id, task=task)
+    updated_task = await task_crud.update_task(task_id=task_id, updates=task_updates)
     return updated_task
 

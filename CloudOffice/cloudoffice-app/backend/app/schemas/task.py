@@ -8,8 +8,9 @@ from app.core.constants import TaskStatusEnum, TaskPriorityEnum
 class TaskBaseDto(BaseModel):
     title: str
     description: Optional[str] = None
-    # project_id: int
-    # assignee_id: Optional[int] = None
+    # project: Project
+    # assignee: Optional[User] = None
+    # created_by: Optional[User] = None
     estimated_hours: float = 0.0
     is_billable: bool = False
     status: TaskStatusEnum = TaskStatusEnum.to_do
@@ -21,14 +22,18 @@ class TaskBaseDto(BaseModel):
 class TaskCreateDto(TaskBaseDto):
     pass
 
+class TaskUpdateDto(BaseModel):
+    estimated_hours: Optional[float] = None 
+    is_billable: Optional[bool] = None
+    status: Optional[TaskStatusEnum] = None
+    priority: Optional[TaskPriorityEnum] = None
+    deadline: Optional[date] = None
+
 class TaskDto(TaskBaseDto):
     id: int
-    # created_by_id: int
     created_at: datetime
     updated_at: Optional[datetime] = None
     time_spent: Optional[float] = 0.0
-    # assignee: Optional[User] = None
-    # created_by: Optional[User] = None
 
     class Config:
         from_attributes = True

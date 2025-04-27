@@ -5,7 +5,7 @@ from sqlalchemy.future import select
 from typing import List, Optional, Dict, Any
 
 from app.models.task import Task
-from app.schemas.task import TaskCreateDto
+from app.schemas.task import TaskCreateDto, TaskUpdateDto
 
 
 # Task CRUD operations
@@ -49,18 +49,12 @@ class TaskCrud:
         await self.db.refresh(db_task)
         return db_task
 
-    async def update_task(self, task_id: int, task: TaskCreateDto) -> Task:
+    async def update_task(self, task_id: int, updates: TaskUpdateDto) -> Task:
         db_task = await self.get_task(task_id)
         if db_task:
-            db_task.title = task.title
-            db_task.description = task.description
-            # db_task.project_id = task.project_id
-            # db_task.assignee_id = task.assignee_id
-            db_task.estimated_hours = task.estimated_hours
-            db_task.is_billable = task.is_billable
-            db_task.status = task.status
-            db_task.priority = task.priority
-            db_task.deadline = task.deadline
+            for field, value in updates.model_dump(exclude_unset=True).items():
+                if hasattr(db_task, field):
+                    setattr(db_task, field, value)
             await self.db.commit()
             await self.db.refresh(db_task)
         return db_task
