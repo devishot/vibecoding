@@ -29,8 +29,8 @@ export default function TasksPageClient({ tasks }: { tasks: any[] }) {
 
   const handleTaskSaved = (updatedTask: any) => {
     console.log("Saving task:", updatedTask);
-    setIsEditFormOpen(false);
     setSelectedTask(null);
+    setIsEditFormOpen(false);
   };
 
   const handleAddTask = () => {

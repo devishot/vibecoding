@@ -17,7 +17,8 @@ import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { DRAFT_TASK_ID, TASK_STATUS_OPTIONS, TASK_PRIORITY_OPTIONS } from "@/lib/constants"
-import { deleteTask } from "@/lib/data-access/tasks"
+import { deleteTask, revalidateTasks, updateTask } from "@/lib/data-access/tasks"
+
 interface TaskTableProps {
   tasks: any[]
   onEditTask: (task: any) => void
@@ -26,9 +27,28 @@ interface TaskTableProps {
 export function TaskTable({ tasks, onEditTask }: TaskTableProps) {
   const [sortField, setSortField] = useState<string>("id")
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
+  const [localTasks, setLocalTasks] = useState(tasks)
+
+  const handleTaskChange = async (taskId: number, field: string, value: any) => {
+    // Update local state immediately for responsive UI
+    setLocalTasks(prevTasks => 
+      prevTasks.map(task => 
+        task.id === taskId ? { ...task, [field]: value } : task
+      )
+    )
+
+    // Update backend
+    try {
+      await updateTask(taskId, { [field]: value }, false)
+    } catch (error) {
+      // Reload tasks to revert local state
+      revalidateTasks()
+      console.error('Failed to update task:', error)
+    }
+  }
 
   // Sort tasks
-  const sortedTasks = [...tasks].sort((a, b) => {
+  const sortedTasks = [...localTasks].sort((a, b) => {
     if (a.id === DRAFT_TASK_ID) return 1;
     if (b.id === DRAFT_TASK_ID) return -1;
     const fieldA = a[sortField]
@@ -129,7 +149,7 @@ export function TaskTable({ tasks, onEditTask }: TaskTableProps) {
             {/* <TableHead className="hidden md:table-cell">Project</TableHead> */}
             <TableHead className="w-[120px]">Status</TableHead>
             <TableHead className="w-[100px]">Priority</TableHead>
-            <TableHead className="hidden lg:table-cell">Assignee</TableHead>
+            {/* <TableHead className="hidden lg:table-cell">Assignee</TableHead> */}
             <TableHead className="hidden lg:table-cell">Deadline</TableHead>
             <TableHead className="hidden xl:table-cell w-[120px]">Est. Hours</TableHead>
             <TableHead className="hidden xl:table-cell w-[100px]">Billable</TableHead>
@@ -167,7 +187,7 @@ export function TaskTable({ tasks, onEditTask }: TaskTableProps) {
                 </Select>
               </TableCell> */}
               <TableCell>
-                <Select defaultValue={task.status}>
+                <Select defaultValue={task.status} onValueChange={(value) => handleTaskChange(task.id, 'status', value)}>
                   <SelectTrigger className="h-8 w-[130px]">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
@@ -184,7 +204,7 @@ export function TaskTable({ tasks, onEditTask }: TaskTableProps) {
                 </Select>
               </TableCell>
               <TableCell>
-                <Select defaultValue={task.priority}>
+                <Select defaultValue={task.priority} onValueChange={(value) => handleTaskChange(task.id, 'priority', value)}>
                   <SelectTrigger className="h-8 w-[110px]">
                     <SelectValue placeholder="Priority" />
                   </SelectTrigger>
@@ -197,8 +217,8 @@ export function TaskTable({ tasks, onEditTask }: TaskTableProps) {
                   </SelectContent>
                 </Select>
               </TableCell>
-              <TableCell className="hidden lg:table-cell">
-                {/* <Select defaultValue={task.assignee.id}>
+             {/* <TableCell className="hidden lg:table-cell">
+                <Select defaultValue={task.assignee.id}>
                   <SelectTrigger className="h-8 w-[150px]">
                     <SelectValue placeholder="Assignee" />
                   </SelectTrigger>
@@ -215,22 +235,22 @@ export function TaskTable({ tasks, onEditTask }: TaskTableProps) {
                       </SelectItem>
                     ))}
                   </SelectContent>
-                </Select> */}
-              </TableCell>
+                </Select> 
+              </TableCell>*/}
               <TableCell className="hidden lg:table-cell">
-                <Input type="date" defaultValue={task.deadline} className="h-8 w-[140px]" />
+                <Input type="date" defaultValue={task.deadline} className="h-8 w-[140px]" onChange={(e) => handleTaskChange(task.id, 'deadline', e.target.value)} />
               </TableCell>
               <TableCell className="hidden xl:table-cell">
-                <Input type="number" defaultValue={task.estimatedHours} className="h-8 w-[80px]" />
+                <Input type="number" defaultValue={task.estimatedHours} className="h-8 w-[80px]" onChange={(e) => handleTaskChange(task.id, 'estimatedHours', parseFloat(e.target.value))} />
               </TableCell>
               <TableCell className="hidden xl:table-cell">
-                <Checkbox checked={task.isBillable} className="mx-auto block" />
+                <Checkbox checked={task.isBillable} className="mx-auto block" onCheckedChange={(checked) => handleTaskChange(task.id, 'isBillable', checked)} />
               </TableCell>
               <TableCell className="text-right">
                 <div className="flex justify-end space-x-1">
-                  <Button variant="ghost" size="icon" title="Log time">
+                  {/* <Button variant="ghost" size="icon" title="Log time">
                     <Clock className="h-4 w-4" />
-                  </Button>
+                  </Button> */}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon">

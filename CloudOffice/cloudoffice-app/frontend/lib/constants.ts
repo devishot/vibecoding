@@ -1,6 +1,10 @@
 export const DRAFT_TASK_ID = 0; 
 export const DRAFT_TASK_TEMPLATE = {
     id: DRAFT_TASK_ID,
+    title: "",
+    description: "",
+    estimated_hours: 0,
+    is_billable: false,
     priority: "not_defined",
     status: "draft"
 };

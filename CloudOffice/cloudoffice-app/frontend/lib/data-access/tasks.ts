@@ -42,22 +42,22 @@ export const readTask = async (taskId: number) => {
   }
 };
 
-export const deleteTask = async (taskId: number) => {
+export const deleteTask = async (taskId: number, revalidate: boolean = true) => {
   try {
     await axios.delete(`${process.env.BACKEND_URL+API_URL}/${taskId}`);
 
-    revalidatePath("/tasks");
+    revalidate && revalidatePath("/tasks");
   } catch (error) {
     console.error('Error deleting task:', error);
     throw error;
   }
 };
 
-export const updateTask = async (taskId: number, task: Record<string, any>) => {
+export const updateTask = async (taskId: number, task_update: Record<string, any>, revalidate: boolean = true) => {
   try {
-    const response = await axios.put(`${process.env.BACKEND_URL+API_URL}/${taskId}`, task);
+    const response = await axios.put(`${process.env.BACKEND_URL+API_URL}/${taskId}`, task_update);
 
-    revalidatePath("/tasks");
+    revalidate && revalidatePath("/tasks");
 
     return response.data;
   } catch (error) {
@@ -65,3 +65,7 @@ export const updateTask = async (taskId: number, task: Record<string, any>) => {
     throw error;
   }
 };
+
+export const revalidateTasks = async () => {
+  revalidatePath("/tasks/");
+}

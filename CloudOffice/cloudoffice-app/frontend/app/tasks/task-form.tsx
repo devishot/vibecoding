@@ -338,7 +338,7 @@ export function TaskForm({ task, open, onOpenChange, onSaved }: TaskEditDialogPr
             <Textarea
               id="description"
               rows={5}
-              value={editedTask.description}
+              value={editedTask.description || ""}
               onChange={(e) => handleChange("description", e.target.value)}
             />
           </div>
